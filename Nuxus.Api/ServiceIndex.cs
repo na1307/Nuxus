@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Nuxus.Api;
 
 internal sealed class ServiceIndex {

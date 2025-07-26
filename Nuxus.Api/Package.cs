@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Nuxus.Api;
+﻿namespace Nuxus.Api;
 
 [PrimaryKey(nameof(Name), nameof(Version))]
 internal sealed record class Package(

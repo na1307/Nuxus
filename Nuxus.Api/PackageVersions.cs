@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Nuxus.Api;
+﻿namespace Nuxus.Api;
 
 internal sealed class PackageVersions {
     public PackageVersions() { }

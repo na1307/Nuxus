@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Nuxus.Api;
+﻿namespace Nuxus.Api;
 
 internal sealed class AppDbContext(DbContextOptions options) : DbContext(options) {
     public DbSet<ApiKey> ApiKeys { get; set; } = null!;

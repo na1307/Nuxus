@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
@@ -160,10 +158,9 @@ internal static class Program {
             return Results.BadRequest();
         }
 
-        var file = files[0];
         var fileName = Path.GetFullPath(Path.GetRandomFileName(), Path.Combine(AppContext.BaseDirectory, Packages));
 
-        await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, (int)file.Length, true)) {
+        await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, (int)files[0].Length, true)) {
             await files[0].CopyToAsync(fs);
         }
 
