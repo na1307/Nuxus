@@ -1,12 +1,7 @@
 ﻿namespace Nuxus.Api;
 
-internal sealed class PackageRegistration {
-    public PackageRegistration() { }
-
-    [SetsRequiredMembers]
-    public PackageRegistration(IEnumerable<PackageRegistrationPage> items) => Items = items;
-
+internal sealed class PackageRegistration(IEnumerable<PackageRegistrationPage> items) {
     public int Count => Items.Count();
 
-    public required IEnumerable<PackageRegistrationPage> Items { get; init; }
+    public IEnumerable<PackageRegistrationPage> Items { get; } = items;
 }

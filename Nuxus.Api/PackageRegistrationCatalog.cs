@@ -2,21 +2,12 @@
 
 namespace Nuxus.Api;
 
-internal sealed class PackageRegistrationCatalog {
-    public PackageRegistrationCatalog() { }
-
-    [SetsRequiredMembers]
-    public PackageRegistrationCatalog(string id, string packageId, string version) {
-        Id = id;
-        PackageId = packageId;
-        Version = version;
-    }
-
+internal sealed class PackageRegistrationCatalog(string id, string packageId, string version) {
     [JsonPropertyName("@id")]
-    public required string Id { get; init; }
+    public string Id { get; } = id;
 
     [JsonPropertyName("id")]
-    public required string PackageId { get; init; }
+    public string PackageId { get; } = packageId;
 
-    public required string Version { get; init; }
+    public string Version { get; } = version;
 }

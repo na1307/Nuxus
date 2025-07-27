@@ -2,28 +2,17 @@
 
 namespace Nuxus.Api;
 
-internal sealed class PackageRegistrationPage {
-    public PackageRegistrationPage() { }
-
-    [SetsRequiredMembers]
-    public PackageRegistrationPage(string id, IEnumerable<PackageRegistrationLeaf> items, string parent, string lower, string upper) {
-        Id = id;
-        Items = items;
-        Parent = parent;
-        Lower = lower;
-        Upper = upper;
-    }
-
+internal sealed class PackageRegistrationPage(string id, IEnumerable<PackageRegistrationLeaf> items, string parent, string lower, string upper) {
     [JsonPropertyName("@id")]
-    public required string Id { get; init; }
+    public string Id { get; } = id;
 
     public int Count => Items.Count();
 
-    public required IEnumerable<PackageRegistrationLeaf> Items { get; init; }
+    public IEnumerable<PackageRegistrationLeaf> Items { get; } = items;
 
-    public required string Parent { get; init; }
+    public string Parent { get; } = parent;
 
-    public required string Lower { get; init; }
+    public string Lower { get; } = lower;
 
-    public required string Upper { get; init; }
+    public string Upper { get; } = upper;
 }
