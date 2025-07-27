@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -8,13 +9,12 @@ namespace Nuxus.Api;
 
 [SuppressMessage("Performance", "CA1862:대/소문자를 구분하지 않는 문자열 비교를 수행하려면 \'StringComparison\' 메서드 오버로드를 사용합니다.", Justification = "SQL")]
 internal static class Program {
-    private const string Packages = "packages";
+    private static DirectoryInfo? packagesDirectory;
 
     private static Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, Packages));
+        packagesDirectory = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "packages"));
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
         builder.Services.AddHttpContextAccessor();
@@ -22,14 +22,7 @@ internal static class Program {
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi("v3");
-
-        builder.Services.AddCors(options => {
-            options.AddPolicy("AllowAll", policy => {
-                policy.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            });
-        });
+        builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
         var app = builder.Build();
 
@@ -66,7 +59,7 @@ internal static class Program {
         return app.RunAsync();
     }
 
-    private static IResult ServiceIndex(IHttpContextAccessor httpContextAccessor) {
+    private static JsonHttpResult<ServiceIndex> ServiceIndex(IHttpContextAccessor httpContextAccessor) {
         IEnumerable<Resource> resources = [
             new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/package", "PackageBaseAddress/3.0.0"),
             new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/package", "PackagePublish/2.0.0"),
@@ -74,19 +67,19 @@ internal static class Program {
             new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/search", "SearchQueryService/3.5.0")
         ];
 
-        return Results.Ok(new ServiceIndex(resources));
+        return TypedResults.Json(new ServiceIndex(resources));
     }
 
     private static async Task<IResult> Version(AppDbContext db, string packageName) {
-        var package = db.Packages.Where(p => p.Name.ToLower() == packageName);
+        var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
 
-        if (!await package.AnyAsync()) {
-            return Results.NotFound();
+        if (!await packages.AnyAsync()) {
+            return TypedResults.NotFound();
         }
 
-        var versions = package.Select(p => p.Version);
+        var versions = packages.Select(p => p.Version);
 
-        return Results.Ok(new PackageVersions(versions));
+        return TypedResults.Json(new PackageVersions(versions));
     }
 
     private static async Task<IResult> DownloadPackage(
@@ -98,13 +91,12 @@ internal static class Program {
         var package = await db.Packages.SingleOrDefaultAsync(p => p.Name.ToLower() == packageName && p.Version.ToLower() == packageVersion);
 
         if (package is null || $"{packageName}.{packageVersion}" != $"{packageName2}.{packageVersion2}") {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
-        var filePath = Path.Combine(AppContext.BaseDirectory, Packages,
-            $"{packageName.ToLowerInvariant()}.{packageVersion.ToLowerInvariant()}.nupkg");
+        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
 
-        return File.Exists(filePath) ? Results.File(filePath, "application/zip") : Results.NotFound();
+        return File.Exists(filePath) ? TypedResults.PhysicalFile(filePath, "application/zip") : TypedResults.NotFound();
     }
 
     private static async Task<IResult> DownloadManifest(
@@ -115,14 +107,13 @@ internal static class Program {
         var package = await db.Packages.SingleOrDefaultAsync(p => p.Name.ToLower() == packageName && p.Version.ToLower() == packageVersion);
 
         if (package is null || packageName != packageName2) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
-        var filePath = Path.Combine(AppContext.BaseDirectory, Packages,
-            $"{packageName.ToLowerInvariant()}.{packageVersion.ToLowerInvariant()}.nupkg");
+        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
 
         if (!File.Exists(filePath)) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         await using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -130,35 +121,35 @@ internal static class Program {
         var nuspec = zip.Entries.SingleOrDefault(e => e.FullName.EndsWith(".nuspec"));
 
         if (nuspec is null) {
-            return Results.InternalServerError();
+            return TypedResults.InternalServerError();
         }
 
         await using var nuspecStream = nuspec.Open();
         using StreamReader reader = new(nuspecStream);
         var xml = await reader.ReadToEndAsync();
 
-        return Results.Text(xml, "application/xml");
+        return TypedResults.Text(xml, "application/xml");
     }
 
     private static async Task<IResult> Push(AppDbContext db, [FromHeader(Name = "X-NuGet-ApiKey")] string apiKey, HttpRequest request) {
         var userKey = GetApiKey(db, apiKey);
 
         if (userKey is null) {
-            return Results.Unauthorized();
+            return TypedResults.Unauthorized();
         }
 
         if (!request.HasFormContentType) {
-            return Results.BadRequest();
+            return TypedResults.BadRequest();
         }
 
         var form = await request.ReadFormAsync();
         var files = form.Files;
 
         if (files.Count != 1) {
-            return Results.BadRequest();
+            return TypedResults.BadRequest();
         }
 
-        var fileName = Path.GetFullPath(Path.GetRandomFileName(), Path.Combine(AppContext.BaseDirectory, Packages));
+        var fileName = Path.Combine(packagesDirectory!.FullName, Path.GetRandomFileName());
 
         await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, (int)files[0].Length, true)) {
             await files[0].CopyToAsync(fs);
@@ -175,7 +166,7 @@ internal static class Program {
             } catch (NotSupportedException) {
                 File.Delete(fileName);
 
-                return Results.BadRequest();
+                return TypedResults.BadRequest();
             }
 
             var nuspec = zf.Entries.SingleOrDefault(static f => f.FullName.EndsWith(".nuspec"));
@@ -213,7 +204,7 @@ internal static class Program {
                 zf = null;
                 File.Delete(fileName);
 
-                return Results.Conflict();
+                return TypedResults.Conflict();
             }
 
             targetFrameworks = dependencies.Elements().Select(static e => e.FirstAttribute!.Value).ToArray();
@@ -223,7 +214,7 @@ internal static class Program {
                 zf = null;
                 File.Delete(fileName);
 
-                return Results.BadRequest();
+                return TypedResults.BadRequest();
             }
         } finally {
             zf?.Dispose();
@@ -233,7 +224,7 @@ internal static class Program {
         await db.Packages.AddAsync(new(id, version, targetFrameworks, DateTime.Now, userKey.UserId));
         await db.SaveChangesAsync();
 
-        return Results.Created();
+        return TypedResults.Created();
     }
 
     private static async Task<IResult> Delete(
@@ -244,39 +235,38 @@ internal static class Program {
         var userKey = GetApiKey(db, apiKey);
 
         if (userKey is null) {
-            return Results.Unauthorized();
+            return TypedResults.Unauthorized();
         }
 
-        var packageEntry
-            = await db.Packages.SingleOrDefaultAsync(p
-                => p.Name.ToLower() == packageName.ToLower() && p.Version.ToLower() == packageVersion.ToLower());
+        var packageEntry = await db.Packages.SingleOrDefaultAsync(p
+            => p.Name.ToLower() == packageName.ToLower() && p.Version.ToLower() == packageVersion.ToLower());
 
         if (packageEntry is null) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         if (userKey.UserId != packageEntry.UploadUserId) {
-            return Results.Unauthorized();
+            return TypedResults.Unauthorized();
         }
 
-        var filePath = Path.Combine(AppContext.BaseDirectory, Packages, $"{packageName}.{packageVersion}.nupkg");
+        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
 
         if (!File.Exists(filePath)) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         File.Delete(filePath);
         db.Packages.Remove(packageEntry);
         await db.SaveChangesAsync();
 
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     private static async Task<IResult> Metadata(AppDbContext db, IHttpContextAccessor httpContextAccessor, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
 
         if (!await packages.AnyAsync()) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         var domain = DomainHelper.GetCurrentDomain(httpContextAccessor);
@@ -290,14 +280,14 @@ internal static class Program {
         var minver = await packages.MinAsync(p => p.Version);
         var maxver = await packages.MaxAsync(p => p.Version);
 
-        return Results.Ok(new PackageRegistration([new($"{currentPath}#page/{minver}/{maxver}", leaves, currentPath, minver, maxver)]));
+        return TypedResults.Json(new PackageRegistration([new($"{currentPath}#page/{minver}/{maxver}", leaves, currentPath, minver, maxver)]));
     }
 
     private static async Task<IResult> AddApiKey(AppDbContext db, ApiKeyRequest request) {
         var existing = await db.ApiKeys.FindAsync(request.UserName, request.KeyName);
 
         if (existing is not null) {
-            return Results.Conflict();
+            return TypedResults.Conflict();
         }
 
         var (originalApiKey, hashString, salt) = GetUniqueKey(db);
@@ -305,7 +295,7 @@ internal static class Program {
         db.ApiKeys.Add(new(request.UserName, request.KeyName, hashString, salt));
         await db.SaveChangesAsync();
 
-        return Results.Ok(new {
+        return TypedResults.Ok(new {
             ApiKey = originalApiKey
         });
 
@@ -348,13 +338,13 @@ internal static class Program {
         var key = await db.ApiKeys.FindAsync(userName, keyName);
 
         if (key is null) {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         db.ApiKeys.Remove(key);
         await db.SaveChangesAsync();
 
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     private static ApiKey? GetApiKey(AppDbContext db, string apiKey) {
