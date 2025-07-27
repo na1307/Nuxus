@@ -14,6 +14,7 @@ internal static class Program {
     private static Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        var serviceIndex = CreateServiceIndex(builder.Configuration["Domain"]!);
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
         builder.Services.AddHttpContextAccessor();
@@ -33,7 +34,7 @@ internal static class Program {
         }
 
         // Service index
-        app.MapGet("/v3/index.json", ServiceIndex).WithName("ServiceIndex").WithDescription("Service index");
+        app.MapGet("/v3/index.json", () => serviceIndex).WithName("ServiceIndex").WithDescription("Service index");
 
         // Package Content
         app.MapGet("/v3/package/{packageName}/index.json", Version).WithName("PackageVersion").WithDescription("Package Version");
@@ -58,16 +59,11 @@ internal static class Program {
         return app.RunAsync();
     }
 
-    private static JsonHttpResult<ServiceIndex> ServiceIndex(IHttpContextAccessor httpContextAccessor) {
-        IEnumerable<Resource> resources = [
-            new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/package", "PackageBaseAddress/3.0.0"),
-            new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/package", "PackagePublish/2.0.0"),
-            new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/metadata", "RegistrationsBaseUrl/3.6.0"),
-            new($"{DomainHelper.GetCurrentDomain(httpContextAccessor)}/v3/search", "SearchQueryService/3.5.0")
-        ];
-
-        return TypedResults.Json(new ServiceIndex(resources));
-    }
+    private static JsonHttpResult<ServiceIndex> CreateServiceIndex(string currentDomain)
+        => TypedResults.Json(new ServiceIndex([
+            new($"{currentDomain}/v3/package", "PackageBaseAddress/3.0.0"), new($"{currentDomain}/v3/package", "PackagePublish/2.0.0"),
+            new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0"), new($"{currentDomain}/v3/search", "SearchQueryService/3.5.0")
+        ]));
 
     private static async Task<IResult> Version(AppDbContext db, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
