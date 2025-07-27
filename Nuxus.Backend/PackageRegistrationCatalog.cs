@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Nuxus.Api;
+namespace Nuxus.Backend;
 
 internal sealed class PackageRegistrationCatalog(string id, string packageId, string version) {
     [JsonPropertyName("@id")]

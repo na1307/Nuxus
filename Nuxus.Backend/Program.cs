@@ -5,16 +5,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Nuxus.Api;
+namespace Nuxus.Backend;
 
 [SuppressMessage("Performance", "CA1862:대/소문자를 구분하지 않는 문자열 비교를 수행하려면 \'StringComparison\' 메서드 오버로드를 사용합니다.", Justification = "SQL")]
 internal static class Program {
-    private static DirectoryInfo? packagesDirectory;
+    private static readonly DirectoryInfo PackagesDirectory = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "packages"));
 
     private static Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        packagesDirectory = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "packages"));
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
         builder.Services.AddHttpContextAccessor();
@@ -94,7 +93,7 @@ internal static class Program {
             return TypedResults.NotFound();
         }
 
-        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
+        var filePath = Path.Combine(PackagesDirectory.FullName, $"{packageName}.{packageVersion}.nupkg");
 
         return File.Exists(filePath) ? TypedResults.PhysicalFile(filePath, "application/zip") : TypedResults.NotFound();
     }
@@ -110,7 +109,7 @@ internal static class Program {
             return TypedResults.NotFound();
         }
 
-        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
+        var filePath = Path.Combine(PackagesDirectory.FullName, $"{packageName}.{packageVersion}.nupkg");
 
         if (!File.Exists(filePath)) {
             return TypedResults.NotFound();
@@ -149,7 +148,7 @@ internal static class Program {
             return TypedResults.BadRequest();
         }
 
-        var fileName = Path.Combine(packagesDirectory!.FullName, Path.GetRandomFileName());
+        var fileName = Path.Combine(PackagesDirectory.FullName, Path.GetRandomFileName());
 
         await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, (int)files[0].Length, true)) {
             await files[0].CopyToAsync(fs);
@@ -169,7 +168,7 @@ internal static class Program {
                 return TypedResults.BadRequest();
             }
 
-            var nuspec = zf.Entries.SingleOrDefault(static f => f.FullName.EndsWith(".nuspec"));
+            var nuspec = zf.Entries.SingleOrDefault(f => f.FullName.EndsWith(".nuspec"));
 
             if (nuspec is null) {
                 return BadRequest(ref zf, fileName);
@@ -207,7 +206,7 @@ internal static class Program {
                 return TypedResults.Conflict();
             }
 
-            targetFrameworks = dependencies.Elements().Select(static e => e.FirstAttribute!.Value).ToArray();
+            targetFrameworks = dependencies.Elements().Select(e => e.FirstAttribute!.Value).ToArray();
 
             static IResult BadRequest(ref ZipArchive? zf, string fileName) {
                 zf!.Dispose();
@@ -249,7 +248,7 @@ internal static class Program {
             return TypedResults.Unauthorized();
         }
 
-        var filePath = Path.Combine(packagesDirectory!.FullName, $"{packageName}.{packageVersion}.nupkg");
+        var filePath = Path.Combine(PackagesDirectory.FullName, $"{packageName}.{packageVersion}.nupkg");
 
         if (!File.Exists(filePath)) {
             return TypedResults.NotFound();

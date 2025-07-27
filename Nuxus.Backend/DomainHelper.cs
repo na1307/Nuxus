@@ -1,4 +1,4 @@
-namespace Nuxus.Api;
+namespace Nuxus.Backend;
 
 internal static class DomainHelper {
     public static string GetCurrentDomain(IHttpContextAccessor httpContextAccessor) {

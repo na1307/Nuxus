@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Nuxus.Api;
+namespace Nuxus.Backend;
 
 internal sealed record class Resource(
     [property: JsonPropertyName("@id")] string Id,

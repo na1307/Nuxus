@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Nuxus.Api;
+namespace Nuxus.Backend;
 
 internal sealed class PackageRegistrationPage(string id, IEnumerable<PackageRegistrationLeaf> items, string parent, string lower, string upper) {
     [JsonPropertyName("@id")]
