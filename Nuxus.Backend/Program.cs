@@ -37,7 +37,7 @@ internal static class Program {
         }
 
         // Service index
-        app.MapServiceIndex().WithName("ServiceIndex").WithDescription("Service index");
+        app.MapServiceIndex("v3/index.json").WithName("ServiceIndex").WithDescription("Service index");
 
         // Package Content
         app.MapGet("/v3/package/{packageName}/index.json", Version).WithName("PackageVersion").WithDescription("Package Version");

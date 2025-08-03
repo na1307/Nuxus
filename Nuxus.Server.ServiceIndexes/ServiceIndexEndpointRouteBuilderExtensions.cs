@@ -8,13 +8,6 @@ public static class ServiceIndexEndpointRouteBuilderExtensions {
     /// Maps a service index endpoint to the specified <see cref="IEndpointRouteBuilder"/> instance.
     /// </summary>
     /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to which the service index endpoint should be mapped.</param>
-    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further configure the endpoint.</returns>
-    public static RouteHandlerBuilder MapServiceIndex(this IEndpointRouteBuilder endpoints) => MapServiceIndex(endpoints, "/v3/index.json");
-
-    /// <summary>
-    /// Maps a service index endpoint to the specified <see cref="IEndpointRouteBuilder"/> instance.
-    /// </summary>
-    /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to which the service index endpoint should be mapped.</param>
     /// <param name="path">The URI path for the service index endpoint. Defaults to "/v3/index.json" if not provided. This must end with ".json".</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further configure the endpoint.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided path does not end with ".json".</exception>
@@ -33,6 +26,10 @@ public static class ServiceIndexEndpointRouteBuilderExtensions {
     public static RouteHandlerBuilder MapServiceIndex(this IEndpointRouteBuilder endpoints, string path, ServiceIndexVersion version) {
         if (!path.EndsWith(".json")) {
             throw new ArgumentException("Path must end with .json", nameof(path));
+        }
+
+        if (!path.StartsWith('/')) {
+            path = $"/{path}";
         }
 
         return endpoints.MapGet(path, (IServiceProvider provider) => TypedResults.Json(new ServiceIndex(version, provider)));
