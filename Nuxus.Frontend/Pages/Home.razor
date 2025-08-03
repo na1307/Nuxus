@@ -46,7 +46,7 @@
         }
 
         var keyRequest = new { UserName = userName, KeyName = keyName };
-        var result = await Http.PostAsync("http://localhost:5216/api-key", JsonContent.Create(keyRequest));
+        var result = await Http.PostAsync("https://localhost:7157/api-key", JsonContent.Create(keyRequest));
 
         if (!result.IsSuccessStatusCode)
         {
@@ -66,7 +66,7 @@
             return;
         }
 
-        var result = await Http.DeleteAsync($"http://localhost:5216/api-key/{userName}/{keyName}");
+        var result = await Http.DeleteAsync($"https://localhost:7157/api-key/{userName}/{keyName}");
 
         test2 = result.IsSuccessStatusCode ? "Key deleted" : $"HTTP {result.StatusCode}";
     }
