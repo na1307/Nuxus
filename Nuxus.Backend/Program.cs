@@ -25,6 +25,7 @@ internal static class Program {
         builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
         builder.Services.AddPackageBaseAddress($"{builder.Configuration["domain"]}/v3/package");
+        builder.Services.AddPackagePublish($"{builder.Configuration["domain"]}/v3/package");
 
         var app = builder.Build();
 
@@ -62,9 +63,7 @@ internal static class Program {
     }
 
     private static JsonHttpResult<ServiceIndex> CreateServiceIndex(string currentDomain)
-        => TypedResults.Json(new ServiceIndex([
-            new($"{currentDomain}/v3/package", "PackagePublish/2.0.0"), new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0")
-        ]));
+        => TypedResults.Json(new ServiceIndex([new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0")]));
 
     private static async Task<IResult> Version(AppDbContext db, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
