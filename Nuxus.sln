@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36310.24 d17.14
+VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Backend", "Nuxus.Backend\Nuxus.Backend.csproj", "{A96CFEA4-FBD9-4E30-812E-C91D0978E67E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Frontend", "Nuxus.Frontend\Nuxus.Frontend.csproj", "{76057F5E-E9E8-4EDC-9B11-C50C4367F4D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Server", "Nuxus.Server\Nuxus.Server.csproj", "{9345E5F1-FFF4-4E9A-978E-75986427E560}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Server.Abstractions", "Nuxus.Server.Abstractions\Nuxus.Server.Abstractions.csproj", "{FAD22889-2694-4CD0-8766-C3A9CF439D0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Server.ResourceImplementations", "Nuxus.Server.ResourceImplementations\Nuxus.Server.ResourceImplementations.csproj", "{6F7E447C-1504-49E9-9D01-611E7D2A8966}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuxus.Server.ServiceIndexes", "Nuxus.Server.ServiceIndexes\Nuxus.Server.ServiceIndexes.csproj", "{DFE09260-76F4-4AAE-B57B-C7E4A0AD0D79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{76057F5E-E9E8-4EDC-9B11-C50C4367F4D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76057F5E-E9E8-4EDC-9B11-C50C4367F4D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76057F5E-E9E8-4EDC-9B11-C50C4367F4D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9345E5F1-FFF4-4E9A-978E-75986427E560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9345E5F1-FFF4-4E9A-978E-75986427E560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9345E5F1-FFF4-4E9A-978E-75986427E560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9345E5F1-FFF4-4E9A-978E-75986427E560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAD22889-2694-4CD0-8766-C3A9CF439D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAD22889-2694-4CD0-8766-C3A9CF439D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAD22889-2694-4CD0-8766-C3A9CF439D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAD22889-2694-4CD0-8766-C3A9CF439D0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F7E447C-1504-49E9-9D01-611E7D2A8966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F7E447C-1504-49E9-9D01-611E7D2A8966}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F7E447C-1504-49E9-9D01-611E7D2A8966}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F7E447C-1504-49E9-9D01-611E7D2A8966}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE09260-76F4-4AAE-B57B-C7E4A0AD0D79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE09260-76F4-4AAE-B57B-C7E4A0AD0D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE09260-76F4-4AAE-B57B-C7E4A0AD0D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE09260-76F4-4AAE-B57B-C7E4A0AD0D79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

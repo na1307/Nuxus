@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nuxus.Server.ResourceImplementations\Nuxus.Server.ResourceImplementations.csproj" />
+    <ProjectReference Include="..\Nuxus.Server.ServiceIndexes\Nuxus.Server.ServiceIndexes.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Nuxus.Server.ServiceIndexes;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +15,6 @@ internal static class Program {
     private static Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        var serviceIndex = CreateServiceIndex(builder.Configuration["Domain"]!);
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
         builder.Services.AddHttpContextAccessor();
@@ -23,6 +23,8 @@ internal static class Program {
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi("v3");
         builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+        builder.Services.AddPackageBaseAddress($"{builder.Configuration["domain"]}/v3/package");
 
         var app = builder.Build();
 
@@ -34,7 +36,7 @@ internal static class Program {
         }
 
         // Service index
-        app.MapGet("/v3/index.json", () => serviceIndex).WithName("ServiceIndex").WithDescription("Service index");
+        app.MapServiceIndex().WithName("ServiceIndex").WithDescription("Service index");
 
         // Package Content
         app.MapGet("/v3/package/{packageName}/index.json", Version).WithName("PackageVersion").WithDescription("Package Version");
@@ -61,8 +63,7 @@ internal static class Program {
 
     private static JsonHttpResult<ServiceIndex> CreateServiceIndex(string currentDomain)
         => TypedResults.Json(new ServiceIndex([
-            new($"{currentDomain}/v3/package", "PackageBaseAddress/3.0.0"), new($"{currentDomain}/v3/package", "PackagePublish/2.0.0"),
-            new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0"), new($"{currentDomain}/v3/search", "SearchQueryService/3.5.0")
+            new($"{currentDomain}/v3/package", "PackagePublish/2.0.0"), new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0")
         ]));
 
     private static async Task<IResult> Version(AppDbContext db, string packageName) {
@@ -164,7 +165,7 @@ internal static class Program {
                 return TypedResults.BadRequest();
             }
 
-            var nuspec = zf.Entries.SingleOrDefault(f => f.FullName.EndsWith(".nuspec"));
+            var nuspec = zf.Entries.SingleOrDefault(static f => f.FullName.EndsWith(".nuspec"));
 
             if (nuspec is null) {
                 return BadRequest(ref zf, fileName);
@@ -202,7 +203,7 @@ internal static class Program {
                 return TypedResults.Conflict();
             }
 
-            targetFrameworks = dependencies.Elements().Select(e => e.FirstAttribute!.Value).ToArray();
+            targetFrameworks = dependencies.Elements().Select(static e => e.FirstAttribute!.Value).ToArray();
 
             static IResult BadRequest(ref ZipArchive? zf, string fileName) {
                 zf!.Dispose();

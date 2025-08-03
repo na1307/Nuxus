@@ -17,4 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nuxus.Server\Nuxus.Server.csproj" />
+  </ItemGroup>
 </Project>
