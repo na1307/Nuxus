@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Nuxus.Server.ServiceIndexes;
 using System.IO.Compression;
@@ -26,6 +25,7 @@ internal static class Program {
 
         builder.Services.AddPackageBaseAddress($"{builder.Configuration["domain"]}/v3/package");
         builder.Services.AddPackagePublish($"{builder.Configuration["domain"]}/v3/package");
+        builder.Services.AddRegistrationsBaseUrl($"{builder.Configuration["domain"]}/v3/metadata");
 
         var app = builder.Build();
 
@@ -61,9 +61,6 @@ internal static class Program {
 
         return app.RunAsync();
     }
-
-    private static JsonHttpResult<ServiceIndex> CreateServiceIndex(string currentDomain)
-        => TypedResults.Json(new ServiceIndex([new($"{currentDomain}/v3/metadata", "RegistrationsBaseUrl/3.6.0")]));
 
     private static async Task<IResult> Version(AppDbContext db, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
