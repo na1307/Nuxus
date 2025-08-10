@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using Nuxus.Server.ServiceIndexes;
-using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
-using System.Xml.Linq;
 
 namespace Nuxus.Backend;
 
@@ -108,19 +108,11 @@ internal static class Program {
             return TypedResults.NotFound();
         }
 
-        await using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        using ZipArchive zip = new(fs, ZipArchiveMode.Read);
-        var nuspec = zip.Entries.SingleOrDefault(e => e.FullName.EndsWith(".nuspec"));
+        using PackageArchiveReader par = new(filePath);
+        await using var nuspec = par.GetNuspec();
+        using StreamReader reader = new(nuspec);
 
-        if (nuspec is null) {
-            return TypedResults.InternalServerError();
-        }
-
-        await using var nuspecStream = nuspec.Open();
-        using StreamReader reader = new(nuspecStream);
-        var xml = await reader.ReadToEndAsync();
-
-        return TypedResults.Text(xml, "application/xml");
+        return TypedResults.Text(await reader.ReadToEndAsync(), "application/xml");
     }
 
     private static async Task<IResult> Push(AppDbContext db, [FromHeader(Name = "X-NuGet-ApiKey")] string apiKey, HttpRequest request) {
@@ -143,73 +135,31 @@ internal static class Program {
 
         var fileName = Path.Combine(PackagesDirectory.FullName, Path.GetRandomFileName());
 
-        await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, (int)files[0].Length, true)) {
+        await using (FileStream fs = new(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, 4096, true)) {
             await files[0].CopyToAsync(fs);
         }
 
-        ZipArchive? zf = null;
-        string? id;
-        string? version;
+        string id;
+        string version;
         IEnumerable<string> targetFrameworks;
 
         try {
-            try {
-                zf = ZipFile.OpenRead(fileName);
-            } catch (NotSupportedException) {
-                File.Delete(fileName);
-
-                return TypedResults.BadRequest();
-            }
-
-            var nuspec = zf.Entries.SingleOrDefault(static f => f.FullName.EndsWith(".nuspec"));
-
-            if (nuspec is null) {
-                return BadRequest(ref zf, fileName);
-            }
-
-            await using var ns = nuspec.Open();
-            var rootElement = XDocument.Load(ns).Root;
-
-            if (rootElement is null) {
-                return BadRequest(ref zf, fileName);
-            }
-
-            var xmlns = rootElement.Name.Namespace;
-            var metadata = rootElement.Element(XName.Get("metadata", xmlns.NamespaceName));
-
-            if (metadata is null) {
-                return BadRequest(ref zf, fileName);
-            }
-
-            id = metadata.Element(XName.Get("id", xmlns.NamespaceName))?.Value;
-            version = metadata.Element(XName.Get("version", xmlns.NamespaceName))?.Value;
-            var dependencies = metadata.Element(XName.Get("dependencies", xmlns.NamespaceName));
-
-            if (id is null || version is null || dependencies is null) {
-                return BadRequest(ref zf, fileName);
-            }
-
+            using PackageArchiveReader par = new(fileName);
+            var nuspec = par.NuspecReader;
+            id = nuspec.GetId();
+            version = nuspec.GetVersion().ToFullString();
+            targetFrameworks = nuspec.GetDependencyGroups().Select(dg => dg.TargetFramework.Framework);
             var existingPackage = await db.Packages.FindAsync(id, version);
 
             if (existingPackage is not null) {
-                zf.Dispose();
-                zf = null;
                 File.Delete(fileName);
 
                 return TypedResults.Conflict();
             }
+        } catch (Exception ex) when (ex is InvalidDataException or PackagingException) {
+            File.Delete(fileName);
 
-            targetFrameworks = dependencies.Elements().Select(static e => e.FirstAttribute!.Value).ToArray();
-
-            static IResult BadRequest(ref ZipArchive? zf, string fileName) {
-                zf!.Dispose();
-                zf = null;
-                File.Delete(fileName);
-
-                return TypedResults.BadRequest();
-            }
-        } finally {
-            zf?.Dispose();
+            return TypedResults.BadRequest();
         }
 
         File.Move(fileName, Path.Combine(Path.GetDirectoryName(fileName)!, $"{id}.{version}.nupkg"));
@@ -317,7 +267,6 @@ internal static class Program {
                 return new(result);
             }
 
-            [SuppressMessage("Style", "IDE0305:컬렉션 초기화 단순화", Justification = "Consistency")]
             static string HashString(string original, byte[] salt) {
                 var hashBytes = SHA512.HashData(Encoding.UTF8.GetBytes(original).Concat(salt).ToArray());
 
@@ -342,7 +291,6 @@ internal static class Program {
     private static ApiKey? GetApiKey(AppDbContext db, string apiKey) {
         return !string.IsNullOrWhiteSpace(apiKey) ? db.ApiKeys.AsEnumerable().FirstOrDefault(Predicate) : null;
 
-        [SuppressMessage("Style", "IDE0305:컬렉션 초기화 단순화", Justification = "Consistency")]
         bool Predicate(ApiKey storedKey) {
             var keyBytes = Encoding.UTF8.GetBytes(apiKey).Concat(storedKey.Salt).ToArray();
             var hashBytes = SHA512.HashData(keyBytes);
