@@ -37,4 +37,5 @@
 *.cmd text eol=crlf
 *.manifest text eol=crlf
 *.config text eol=crlf
+*.vsixmanifest text eol=crlf
 Directory.Packages.props text eol=lf
