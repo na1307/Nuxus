@@ -24,9 +24,11 @@ internal static class Program {
 
         builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        builder.Services.AddPackageBaseAddress("/v3/package");
-        builder.Services.AddPackagePublish("/v3/package");
-        builder.Services.AddRegistrationsBaseUrl("/v3/metadata");
+        builder.Services.AddServiceIndex(resources => {
+            resources.AddPackageBaseAddress("/v3/package");
+            resources.AddPackagePublish("/v3/package");
+            resources.AddRegistrationsBaseUrl("/v3/metadata");
+        });
 
         builder.Services.AddRazorPages();
 

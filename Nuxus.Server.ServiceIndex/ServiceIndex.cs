@@ -6,7 +6,7 @@ internal sealed class ServiceIndex(ServiceIndexVersion version, IServiceProvider
         _ => throw new ArgumentOutOfRangeException(nameof(version), version, null)
     };
 
-    public IEnumerable<IResource> Resources { get; } = provider.GetServices<IResource>().Select(r => {
+    public IEnumerable<IResource> Resources { get; } = provider.GetRequiredService<IResources>().Select(r => {
         if (!r.Id.IsAbsoluteUri) {
             r.Id = new(DomainHelper.GetCurrentDomain(contextAccessor) + r.Id.OriginalString);
         }
