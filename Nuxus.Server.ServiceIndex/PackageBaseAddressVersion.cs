@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 /// <summary>
 /// Represents the available versions for the Package Base Address.

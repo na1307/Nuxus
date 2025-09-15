@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 /// <summary>
 /// Provides extension methods for registering Package Base Address services with an <see cref="IServiceCollection"/>.

@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 /// <summary>
 /// Specifies the versions of the service index supported by the application.

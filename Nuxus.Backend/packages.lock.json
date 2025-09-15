@@ -458,7 +458,7 @@
         "type": "Project",
         "dependencies": {
           "Nuxus.Server.ResourceImplementations": "[0.0.0, )",
-          "Nuxus.Server.ServiceIndexes": "[0.0.0, )"
+          "Nuxus.Server.ServiceIndex": "[0.0.0, )"
         }
       },
       "nuxus.server.abstractions": {
@@ -470,7 +470,7 @@
           "Nuxus.Server.Abstractions": "[0.0.0, )"
         }
       },
-      "nuxus.server.serviceindexes": {
+      "nuxus.server.serviceindex": {
         "type": "Project",
         "dependencies": {
           "Nuxus.Server.Abstractions": "[0.0.0, )"

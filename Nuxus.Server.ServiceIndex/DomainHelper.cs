@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 internal static class DomainHelper {
     public static string GetCurrentDomain(IHttpContextAccessor contextAccessor) {

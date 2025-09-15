@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 internal sealed class RegistrationsBaseUrl(Uri id, RegistrationsBaseUrlVersion version) : IResource {
     public Uri Id { get; set; } = id;

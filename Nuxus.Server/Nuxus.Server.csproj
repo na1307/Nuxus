@@ -7,6 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nuxus.Server.ResourceImplementations\Nuxus.Server.ResourceImplementations.csproj" />
-    <ProjectReference Include="..\Nuxus.Server.ServiceIndexes\Nuxus.Server.ServiceIndexes.csproj" />
+    <ProjectReference Include="..\Nuxus.Server.ServiceIndex\Nuxus.Server.ServiceIndex.csproj" />
   </ItemGroup>
 </Project>

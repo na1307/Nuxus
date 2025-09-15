@@ -2,6 +2,6 @@
   <Project Path="Nuxus.Backend/Nuxus.Backend.csproj" />
   <Project Path="Nuxus.Server.Abstractions/Nuxus.Server.Abstractions.csproj" />
   <Project Path="Nuxus.Server.ResourceImplementations/Nuxus.Server.ResourceImplementations.csproj" />
-  <Project Path="Nuxus.Server.ServiceIndexes/Nuxus.Server.ServiceIndexes.csproj" />
+  <Project Path="Nuxus.Server.ServiceIndex/Nuxus.Server.ServiceIndex.csproj" />
   <Project Path="Nuxus.Server/Nuxus.Server.csproj" />
 </Solution>

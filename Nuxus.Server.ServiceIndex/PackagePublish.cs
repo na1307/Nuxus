@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 internal sealed class PackagePublish(Uri id, PackagePublishVersion version) : IResource {
     public Uri Id { get; set; } = id;

@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 /// <summary>
 /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to map service index endpoints.

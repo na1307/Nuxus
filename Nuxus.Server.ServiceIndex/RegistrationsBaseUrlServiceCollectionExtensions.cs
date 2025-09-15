@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndexes;
+﻿namespace Nuxus.Server.ServiceIndex;
 
 /// <summary>
 /// Provides extension methods for adding RegistrationsBaseUrl services to an <see cref="IServiceCollection"/>.

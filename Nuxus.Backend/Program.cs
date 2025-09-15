@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
-using Nuxus.Server.ServiceIndexes;
+using Nuxus.Server.ServiceIndex;
 using System.Security.Cryptography;
 using System.Text;
 
