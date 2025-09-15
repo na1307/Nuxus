@@ -27,7 +27,22 @@ internal static class Program {
         builder.Services.AddPackagePublish($"{builder.Configuration["domain"]}/v3/package");
         builder.Services.AddRegistrationsBaseUrl($"{builder.Configuration["domain"]}/v3/metadata");
 
+        builder.Services.AddRazorPages();
+
         var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment()) {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
 
         app.UseCors("AllowAll");
 
@@ -58,6 +73,9 @@ internal static class Program {
         // API Key management
         app.MapPost("/api-key", AddApiKey).WithName("AddApiKey").WithDescription("Add API Key");
         app.MapDelete("/api-key/{userName}/{keyName}", DeleteApiKey).WithName("DeleteApiKey").WithDescription("Delete API Key");
+
+        app.MapStaticAssets();
+        app.MapRazorPages().WithStaticAssets();
 
         return app.RunAsync();
     }
