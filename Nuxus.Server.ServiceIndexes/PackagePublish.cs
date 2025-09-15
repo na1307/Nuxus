@@ -1,7 +1,7 @@
 ﻿namespace Nuxus.Server.ServiceIndexes;
 
 internal sealed class PackagePublish(Uri id, PackagePublishVersion version) : IResource {
-    public Uri Id { get; } = id;
+    public Uri Id { get; set; } = id;
 
     public string Version { get; } = version switch {
         PackagePublishVersion.Two => "2.0.0",

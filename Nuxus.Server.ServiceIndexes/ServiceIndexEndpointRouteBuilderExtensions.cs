@@ -32,6 +32,7 @@ public static class ServiceIndexEndpointRouteBuilderExtensions {
             path = $"/{path}";
         }
 
-        return endpoints.MapGet(path, (IServiceProvider provider) => TypedResults.Json(new ServiceIndex(version, provider)));
+        return endpoints.MapGet(path, (IServiceProvider provider, IHttpContextAccessor contextAccessor)
+            => TypedResults.Json(new ServiceIndex(version, provider, contextAccessor)));
     }
 }

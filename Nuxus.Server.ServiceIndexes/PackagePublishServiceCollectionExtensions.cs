@@ -30,7 +30,7 @@ public static class PackagePublishServiceCollectionExtensions {
     /// <param name="version">The version of the package publish service to be used.</param>
     /// <returns>The modified service collection with the package publish resource added.</returns>
     public static IServiceCollection AddPackagePublish(this IServiceCollection services, string id, PackagePublishVersion version)
-        => AddPackagePublish(services, new Uri(id), version);
+        => AddPackagePublish(services, new Uri(id, UriKind.RelativeOrAbsolute), version);
 
     /// <summary>
     /// Adds a package publish resource to the provided service collection with the specified ID and version.

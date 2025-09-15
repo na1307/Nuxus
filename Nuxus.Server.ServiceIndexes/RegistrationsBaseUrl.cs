@@ -1,7 +1,7 @@
 ﻿namespace Nuxus.Server.ServiceIndexes;
 
 internal sealed class RegistrationsBaseUrl(Uri id, RegistrationsBaseUrlVersion version) : IResource {
-    public Uri Id { get; } = id;
+    public Uri Id { get; set; } = id;
 
     public string Version { get; } = version switch {
         RegistrationsBaseUrlVersion.ThreeSix => "3.6.0",

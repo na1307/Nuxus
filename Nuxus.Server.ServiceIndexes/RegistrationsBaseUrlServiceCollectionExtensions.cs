@@ -30,7 +30,7 @@ public static class RegistrationsBaseUrlServiceCollectionExtensions {
     /// <param name="version">The version of the RegistrationsBaseUrl to be used.</param>
     /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddRegistrationsBaseUrl(this IServiceCollection services, string id, RegistrationsBaseUrlVersion version)
-        => AddRegistrationsBaseUrl(services, new Uri(id), version);
+        => AddRegistrationsBaseUrl(services, new Uri(id, UriKind.RelativeOrAbsolute), version);
 
     /// <summary>
     /// Adds the RegistrationsBaseUrl to the specified service collection.

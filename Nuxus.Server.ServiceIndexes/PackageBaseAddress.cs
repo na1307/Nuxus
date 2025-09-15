@@ -1,7 +1,7 @@
 ﻿namespace Nuxus.Server.ServiceIndexes;
 
 internal sealed class PackageBaseAddress(Uri id, PackageBaseAddressVersion version) : IResource {
-    public Uri Id { get; } = id;
+    public Uri Id { get; set; } = id;
 
     public string Version { get; } = version switch {
         PackageBaseAddressVersion.Three => "3.0.0",

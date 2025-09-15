@@ -21,11 +21,12 @@ internal static class Program {
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi("v3");
+
         builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-        builder.Services.AddPackageBaseAddress($"{builder.Configuration["domain"]}/v3/package");
-        builder.Services.AddPackagePublish($"{builder.Configuration["domain"]}/v3/package");
-        builder.Services.AddRegistrationsBaseUrl($"{builder.Configuration["domain"]}/v3/metadata");
+        builder.Services.AddPackageBaseAddress("/v3/package");
+        builder.Services.AddPackagePublish("/v3/package");
+        builder.Services.AddRegistrationsBaseUrl("/v3/metadata");
 
         builder.Services.AddRazorPages();
 

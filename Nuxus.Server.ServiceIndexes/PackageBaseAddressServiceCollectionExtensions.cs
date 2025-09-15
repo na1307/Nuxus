@@ -30,7 +30,7 @@ public static class PackageBaseAddressServiceCollectionExtensions {
     /// <param name="version">The version of the Package Base Address to use.</param>
     /// <returns>The <see cref="IServiceCollection"/> for chaining additional configuration.</returns>
     public static IServiceCollection AddPackageBaseAddress(this IServiceCollection services, string id, PackageBaseAddressVersion version)
-        => AddPackageBaseAddress(services, new Uri(id), version);
+        => AddPackageBaseAddress(services, new Uri(id, UriKind.RelativeOrAbsolute), version);
 
     /// <summary>
     /// Registers a Package Base Address service with the specified URI and version into the <see cref="IServiceCollection"/>.
