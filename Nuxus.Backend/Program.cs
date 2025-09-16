@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using Nuxus.Server.ServiceIndex;
@@ -55,7 +55,7 @@ internal static class Program {
         }
 
         // Service index
-        app.MapServiceIndex("v3/index.json").WithName("ServiceIndex").WithDescription("Service index");
+        app.MapServiceIndex("/v3/index.json").WithName("ServiceIndex").WithDescription("Service index");
 
         // Package Content
         app.MapGet("/v3/package/{packageName}/index.json", Version).WithName("PackageVersion").WithDescription("Package Version");

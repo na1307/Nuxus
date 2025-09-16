@@ -1,11 +1,9 @@
-namespace Nuxus.Backend;
+﻿namespace Nuxus.Backend;
 
 internal static class DomainHelper {
-    public static string GetCurrentDomain(IHttpContextAccessor httpContextAccessor) {
-        var hc = httpContextAccessor.HttpContext;
-        var scheme = hc?.Request.Scheme;
-        var host = hc?.Request.Host.Value;
+    public static string GetCurrentDomain(IHttpContextAccessor contextAccessor) {
+        var request = contextAccessor.HttpContext!.Request;
 
-        return scheme is not null && host is not null ? $"{scheme}://{host}" : string.Empty;
+        return $"{request.Scheme}://{request.Host}";
     }
 }
