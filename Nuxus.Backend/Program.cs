@@ -247,7 +247,7 @@ internal static class Program {
     }
 
     private static async Task<IResult> AddApiKey(AppDbContext db, ApiKeyRequest request) {
-        var existing = await db.ApiKeys.FindAsync(request.UserName, request.KeyName);
+        var existing = await db.ApiKeys.FindAsync(request.UserId, request.KeyName);
 
         if (existing is not null) {
             return TypedResults.Conflict();
@@ -255,7 +255,7 @@ internal static class Program {
 
         var (originalApiKey, hashString, salt) = GetUniqueKey(db);
 
-        db.ApiKeys.Add(new(request.UserName, request.KeyName, hashString, salt));
+        db.ApiKeys.Add(new(request.UserId, request.KeyName, hashString, salt));
         await db.SaveChangesAsync();
 
         return TypedResults.Ok(new {

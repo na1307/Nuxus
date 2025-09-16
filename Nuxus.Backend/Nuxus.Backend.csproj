@@ -5,6 +5,7 @@
     <NoWarn>$(NoWarn);SA1600;SA1649</NoWarn>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    <UserSecretsId>8aae2b01-5120-416a-85ca-686ffb6c2b25</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />

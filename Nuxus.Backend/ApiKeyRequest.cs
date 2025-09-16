@@ -1,3 +1,3 @@
 ﻿namespace Nuxus.Backend;
 
-internal readonly record struct ApiKeyRequest(string UserName, string KeyName);
+internal sealed record class ApiKeyRequest(Guid UserId, string KeyName);
