@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using Nuxus.Server;
 using Nuxus.Server.ServiceIndex;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,7 +16,7 @@ internal static class Program {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+        builder.Services.AddNuxusDbContext<NuxusDbContext>(options => options.UseSqlite(connectionString));
         builder.Services.AddHttpContextAccessor();
 
         // Add services to the container.
@@ -83,7 +84,7 @@ internal static class Program {
         return app.RunAsync();
     }
 
-    private static async Task<IResult> Version(AppDbContext db, string packageName) {
+    private static async Task<IResult> Version(NuxusDbContext db, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
 
         if (!await packages.AnyAsync()) {
@@ -96,7 +97,7 @@ internal static class Program {
     }
 
     private static async Task<IResult> DownloadPackage(
-        AppDbContext db,
+        NuxusDbContext db,
         string packageName,
         string packageVersion,
         string packageName2,
@@ -113,7 +114,7 @@ internal static class Program {
     }
 
     private static async Task<IResult> DownloadManifest(
-        AppDbContext db,
+        NuxusDbContext db,
         string packageName,
         string packageVersion,
         string packageName2) {
@@ -136,7 +137,7 @@ internal static class Program {
         return TypedResults.Text(await reader.ReadToEndAsync(), "application/xml");
     }
 
-    private static async Task<IResult> Push(AppDbContext db, [FromHeader(Name = "X-NuGet-ApiKey")] string apiKey, HttpRequest request) {
+    private static async Task<IResult> Push(NuxusDbContext db, [FromHeader(Name = "X-NuGet-ApiKey")] string apiKey, HttpRequest request) {
         var userKey = GetApiKey(db, apiKey);
 
         if (userKey is null) {
@@ -169,7 +170,7 @@ internal static class Program {
             var nuspec = par.NuspecReader;
             id = nuspec.GetId();
             version = nuspec.GetVersion().ToFullString();
-            targetFrameworks = nuspec.GetDependencyGroups().Select(dg => dg.TargetFramework.Framework);
+            targetFrameworks = nuspec.GetDependencyGroups().Select(static dg => dg.TargetFramework.Framework);
             var existingPackage = await db.Packages.FindAsync(id, version);
 
             if (existingPackage is not null) {
@@ -191,7 +192,7 @@ internal static class Program {
     }
 
     private static async Task<IResult> Delete(
-        AppDbContext db,
+        NuxusDbContext db,
         string packageName,
         string packageVersion,
         [FromHeader(Name = "X-NuGet-ApiKey")] string apiKey) {
@@ -225,7 +226,7 @@ internal static class Program {
         return TypedResults.NoContent();
     }
 
-    private static async Task<IResult> Metadata(AppDbContext db, IHttpContextAccessor httpContextAccessor, string packageName) {
+    private static async Task<IResult> Metadata(NuxusDbContext db, IHttpContextAccessor httpContextAccessor, string packageName) {
         var packages = db.Packages.Where(p => p.Name.ToLower() == packageName);
 
         if (!await packages.AnyAsync()) {
@@ -246,7 +247,7 @@ internal static class Program {
         return TypedResults.Json(new PackageRegistration([new($"{currentPath}#page/{minver}/{maxver}", leaves, currentPath, minver, maxver)]));
     }
 
-    private static async Task<IResult> AddApiKey(AppDbContext db, ApiKeyRequest request) {
+    private static async Task<IResult> AddApiKey(NuxusDbContext db, ApiKeyRequest request) {
         var existing = await db.ApiKeys.FindAsync(request.UserId, request.KeyName);
 
         if (existing is not null) {
@@ -262,7 +263,7 @@ internal static class Program {
             ApiKey = originalApiKey
         });
 
-        static (string, string, byte[]) GetUniqueKey(AppDbContext db) {
+        static (string, string, byte[]) GetUniqueKey(NuxusDbContext db) {
             string originalApiKey;
             byte[] salt;
             string hashString;
@@ -296,7 +297,7 @@ internal static class Program {
         }
     }
 
-    private static async Task<IResult> DeleteApiKey(AppDbContext db, string userName, string keyName) {
+    private static async Task<IResult> DeleteApiKey(NuxusDbContext db, string userName, string keyName) {
         var key = await db.ApiKeys.FindAsync(userName, keyName);
 
         if (key is null) {
@@ -309,7 +310,7 @@ internal static class Program {
         return TypedResults.NoContent();
     }
 
-    private static ApiKey? GetApiKey(AppDbContext db, string apiKey) {
+    private static ApiKey? GetApiKey(NuxusDbContext db, string apiKey) {
         return !string.IsNullOrWhiteSpace(apiKey) ? db.ApiKeys.AsEnumerable().FirstOrDefault(Predicate) : null;
 
         bool Predicate(ApiKey storedKey) {
