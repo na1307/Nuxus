@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndex;
+﻿namespace Nuxus.ServiceIndex;
 
 internal sealed class ServiceIndex(ServiceIndexVersion version, IServiceProvider provider, IHttpContextAccessor contextAccessor) {
     public string Version { get; } = version switch {

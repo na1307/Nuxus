@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 
-namespace Nuxus.Server.ServiceIndex;
+namespace Nuxus.ServiceIndex;
 
 /// <summary>
 /// Represents a mutable collection of NuGet service resources, providing methods to add package-related endpoints for use in client operations.

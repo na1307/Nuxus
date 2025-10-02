@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndex;
+﻿namespace Nuxus.ServiceIndex;
 
 /// <summary>
 /// Defines the available versions for the RegistrationsBaseUrl.

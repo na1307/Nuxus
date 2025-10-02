@@ -21,7 +21,7 @@
     <PackageReference Include="NuGet.Packaging" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nuxus.Server\Nuxus.Server.csproj" />
-    <ProjectReference Include="..\Nuxus.Server.ServiceIndex\Nuxus.Server.ServiceIndex.csproj" />
+    <ProjectReference Include="..\Nuxus\Nuxus.csproj" />
+    <ProjectReference Include="..\Nuxus.ServiceIndex\Nuxus.ServiceIndex.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Nuxus.Server;
+namespace Nuxus;
 
 /// <summary>
 /// Provides extension methods for configuring services related to the Nuxus server.

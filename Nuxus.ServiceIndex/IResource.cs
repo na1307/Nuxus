@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Nuxus.Server.ServiceIndex;
+namespace Nuxus.ServiceIndex;
 
 internal interface IResource {
     [JsonPropertyName("@id")]

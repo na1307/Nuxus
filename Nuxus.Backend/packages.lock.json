@@ -446,13 +446,13 @@
         "resolved": "9.0.0",
         "contentHash": "U9msthvnH2Fsw7xwAvIhNHOdnIjOQTwOc8Vd0oGOsiRcGMGoBFlUD6qtYawRUoQdKH9ysxesZ9juFElt1Jw/7A=="
       },
-      "nuxus.server": {
+      "nuxus": {
         "type": "Project",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0-rc.1.25451.107, )"
         }
       },
-      "nuxus.server.serviceindex": {
+      "nuxus.serviceindex": {
         "type": "Project"
       },
       "Microsoft.EntityFrameworkCore.Relational": {

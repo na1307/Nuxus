@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Nuxus.Server;
+namespace Nuxus;
 
 /// <summary>
 /// An abstract base class for the Nuxus database context that serves as the foundation

@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndex;
+﻿namespace Nuxus.ServiceIndex;
 
 internal sealed class PackageBaseAddress(Uri id, PackageBaseAddressVersion version) : IResource {
     public Uri Id { get; set; } = id;

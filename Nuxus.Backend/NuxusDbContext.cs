@@ -1,5 +1,3 @@
-﻿using Nuxus.Server;
-
-namespace Nuxus.Backend;
+﻿namespace Nuxus.Backend;
 
 internal sealed class NuxusDbContext(DbContextOptions options) : NuxusDbContextBase(options);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Nuxus.Server;
+namespace Nuxus;
 
 /// <summary>
 /// Interface for the Nuxus database context that handles packages and API keys in the database.

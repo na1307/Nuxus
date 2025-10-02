@@ -1,5 +1,5 @@
 <Solution>
+  <Project Path="Nuxus/Nuxus.csproj" />
   <Project Path="Nuxus.Backend/Nuxus.Backend.csproj" />
-  <Project Path="Nuxus.Server.ServiceIndex/Nuxus.Server.ServiceIndex.csproj" />
-  <Project Path="Nuxus.Server/Nuxus.Server.csproj" />
+  <Project Path="Nuxus.ServiceIndex/Nuxus.ServiceIndex.csproj" />
 </Solution>

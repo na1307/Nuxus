@@ -1,4 +1,4 @@
-﻿namespace Nuxus.Server.ServiceIndex;
+﻿namespace Nuxus.ServiceIndex;
 
 /// <summary>
 /// Provides extension methods for registering service index resources with an <see cref="IServiceCollection"/>.
