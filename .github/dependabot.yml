@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: daily
+      time: "18:00"
+      timezone: Asia/Seoul
+    assignees:
+      - na1307
+    pull-request-branch-name:
+      separator: _
+    groups:
+      default:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+      time: "12:00"
+      timezone: Asia/Seoul
+    assignees:
+      - na1307
+    pull-request-branch-name:
+      separator: _
